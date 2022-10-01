@@ -1,11 +1,17 @@
+#ifndef LEXER_H
+#define LEXER_H
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <string.h>
 #include "../Headers/token.h"
+#include "../Headers/kits.h"
 
-#ifndef LEXER_H
-#define LEXER_H
+
+#define BUFFER_SIZE 2048
+#define HALF_BUFFER_SIZE 1024
 
 using namespace std;
 
@@ -33,10 +39,24 @@ public:
      */
     bool lexical_analysis(string file_name);
     
+    /**
+     * @brief Get the lines of file
+     * 
+     */
+    int get_lines_num();
+
+    /**
+     * @brief Get the chars num of file
+     * 
+     */
+    int get_chars_num();
+
 private:
     int line_count;///< the num of lines in file
     int char_count;///< the num of chars in file
+    int pos_in_line;
     vector<token> mark_table;///< the mark table of file
+    char buffer[BUFFER_SIZE];
 };
 
 #endif

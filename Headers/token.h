@@ -1,8 +1,8 @@
-#include <string>
-#include <tuple>
-
 #ifndef TOKEN_H
 #define TOKEN_H
+
+#include <string>
+#include <tuple>
 
 using namespace std;
 

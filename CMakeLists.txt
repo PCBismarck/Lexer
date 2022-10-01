@@ -8,10 +8,10 @@ add_executable(Lexer
     Sources/main.cpp
     Headers/lexer.h
     Sources/lexer.cpp
-    Headers/markTable.h
-    Sources/markTable.cpp
     Headers/token.h
     Sources/token.cpp
+    Headers/kits.h
+    Sources/kits.cpp
     )
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

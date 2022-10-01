@@ -1,5 +1,8 @@
 #include <iostream>
+#include "../Headers/lexer.h"
 
 int main(int, char**) {
-    std::cout << "Hello, world!\n";
+    lexer clex;
+    clex.lexical_analysis("test.txt");
+    return 0;
 }
