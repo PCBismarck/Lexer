@@ -2,9 +2,21 @@
 #include <iomanip>
 #include "../Headers/lexer.h"
 
-int main(int, char**) {
+void print_usage();
+
+int main(int argc, char** argv) {
     lexer clex;
-    clex.lexical_analysis("test.txt");
+    if(argc < 2)
+    {
+        print_usage();
+        return -1;
+    }
+    
+    if(!clex.lexical_analysis(argv[1]))
+    {
+        cout << "Open file fail!" << endl;
+        return -1;
+    }
     std::cout << "Chars:" << clex.get_chars_num() << std::endl;
     std::cout << "Lines:" << clex.get_lines_num() << std::endl;
     //输出测试结果-------------------------------------------------------------------------------
@@ -31,4 +43,11 @@ int main(int, char**) {
     markT.close();
     //--------------------------------------------------------------------------------------
     return 0;
+}
+
+
+void print_usage()
+{
+    cout << "usage: lexcer <file name>" << endl;
+    cout << "The mark table will store in <MarkTable.txt>" << endl;
 }
