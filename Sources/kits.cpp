@@ -12,7 +12,7 @@ bool isOperator(string key)
 
 bool isDelimiter(char key)
 {
-    if(OPERATOR.count(to_string(key)) || isblank(key) || key == '\n' || key == EOF )
+    if(OPERATOR.count(std::to_string(key)) || isblank(key) || key == '\n' || key == EOF )
         return true;
     return false;
 }

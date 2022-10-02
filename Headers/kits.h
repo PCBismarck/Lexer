@@ -2,6 +2,7 @@
 #define KITS_H
 
 #include <iostream>
+#include <string>
 #include <set>
 
 using namespace std;
