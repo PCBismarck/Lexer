@@ -34,5 +34,7 @@
 build
 Headers/latex
 Headers/html
+Sources/latex
+Sources/html
 .vscode
 test.txt
