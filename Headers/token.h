@@ -29,7 +29,7 @@ public:
      * 
      * @param token_params  a 4 params tuple to store the result
      */
-    void get_params(tuple<string, tuple<int, int>, string> token_params);
+    void get_params(tuple<string, tuple<int, int>, string>& token_params);
 
 private: 
     string type;

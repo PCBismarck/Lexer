@@ -12,9 +12,19 @@ bool isOperator(string key)
 
 bool isDelimiter(char key)
 {
-    if(OPERATOR.count(to_string(key)) || isblank(key) || key == '\n' || key == EOF)
+    if(OPERATOR.count(to_string(key)) || isblank(key) || key == '\n' || key == EOF )
         return true;
     return false;
+}
+
+bool isIdentifier(char key)
+{
+    return isalpha(key) || key == '_';
+}
+
+bool isPunctuator(char key)
+{
+    return PUNCTUATOR.count(key);
 }
 
 set<string> KEYWORD = {
@@ -33,7 +43,23 @@ set<string> OPERATOR = {
     "++",       "--",       "%",        "&",
     "|",        "!",        "&&",       "||"
     ">",        "<",        "=",        "<=",
-    ">=",       "==",       
+    ">=",       "==",       "*=",       "/=",
+    "%=",       "<<=",      ">>=",      "&=",
+    "^=",       "|=",       "#",        "##",
+    "<:",       ":>",       "<%",       "%>",
+    "%:",       "%:%:",     ".",        "->",
     "(",        ")",        "[",        "]",        
     "{",        "}",        ",",        ";",
+    "~",        "<<",       ">>",       "^",
+    "?",        ":",        ";",        
+};
+
+set<char> PUNCTUATOR = {
+    '+',        '-',        '*',        '/',
+    '%',        '&',        '|',        '!',        
+    '>',        '<',        '=',        '#',   
+    '.',        '(',        ')',        '[',        
+    ']',        '{',        '}',        ',',        
+    ';',        '~',        '^',        '?',        
+    ':',        ';',    
 };

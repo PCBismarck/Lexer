@@ -51,12 +51,21 @@ public:
      */
     int get_chars_num();
 
+    vector<token>& get_marktable();
+    
+private:
+    int read_to_buff(int where);
+    int ptr_inc(int &ptr);
+    void buffer_manage(int buffer_state);
+
+
 private:
     int line_count;///< the num of lines in file
     int char_count;///< the num of chars in file
     int pos_in_line;
     vector<token> mark_table;///< the mark table of file
     char buffer[BUFFER_SIZE];
+    ifstream ifs;
 };
 
 #endif

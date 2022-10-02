@@ -35,6 +35,17 @@ bool isOperator(string key);
 bool isDelimiter(char key);
 
 /**
+ * @brief determine whether the key is alpha or '_' 
+ * 
+ * @param key 
+ * @return true 
+ * @return false 
+ */
+bool isIdentifier(char key);
+
+bool isPunctuator(char key);
+
+/**
  * @brief keywords in c
  * 
  */
@@ -45,5 +56,7 @@ extern set<string> KEYWORD;
  * 
  */
 extern set<string> OPERATOR;
+
+extern set<char> PUNCTUATOR;
 
 #endif
