@@ -51,8 +51,21 @@ public:
      */
     int get_chars_num();
 
+    int get_keyword_num();
+
+    int get_identifier_num();
+
+    int get_constant_num();
+
+    int get_string_num();
+
+    int get_punctuator_num();
+
+
     vector<token>& get_marktable();
     
+    vector<token>& get_error_table();
+
 private:
     int read_to_buff(int where);
     int ptr_inc(int &ptr);
@@ -63,7 +76,15 @@ private:
     int line_count;///< the num of lines in file
     int char_count;///< the num of chars in file
     int pos_in_line;
+
+    int keyword_num;
+    int identifier_num;
+    int constant_num;
+    int string_num;
+    int punctuator_num;
+
     vector<token> mark_table;///< the mark table of file
+    vector<token> error_table;
     char buffer[BUFFER_SIZE];
     ifstream ifs;
 };

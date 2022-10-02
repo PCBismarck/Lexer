@@ -10,12 +10,51 @@ lexer::lexer()
     char_count = 0;
     pos_in_line = 1;
     mark_table.clear();
+    error_table.clear();
     memset(buffer, 0, sizeof(buffer));
+    keyword_num = 0;
+    identifier_num = 0;
+    constant_num = 0;
+    string_num = 0;
+    punctuator_num = 0;
+
 }
+
+
+int lexer::get_keyword_num()
+{
+    return keyword_num;
+}
+
+int lexer::get_identifier_num()
+{
+    return identifier_num;
+}
+
+int lexer::get_constant_num()
+{
+    return constant_num;
+}
+
+int lexer::get_string_num()
+{
+    return string_num;
+}
+
+int lexer::get_punctuator_num()
+{
+    return punctuator_num;
+}
+
 
 vector<token>& lexer::get_marktable()
 {
     return mark_table;
+}
+
+vector<token>& lexer::get_error_table()
+{
+    return error_table;
 }
 
 bool lexer::lexical_analysis(string file_name)
@@ -83,6 +122,10 @@ bool lexer::lexical_analysis(string file_name)
                 type = "ErrorType";
 
             token key(type, tuple<int,int>(line_count, pos_in_line), str_buff);
+            if (err)
+                error_table.push_back(key);
+            else
+                constant_num++;
             mark_table.push_back(key);
             cur = pre;
             pos_in_line += str_buff.length();
@@ -98,7 +141,12 @@ bool lexer::lexical_analysis(string file_name)
             }
             string type = "Identifier";
             if(isKeyword(str_buff))
+            {
                 type = "Keyword";
+                keyword_num++;    
+            }
+            else
+                identifier_num++;
                 
             token key(type, tuple<int,int>(line_count, pos_in_line), str_buff);
             mark_table.push_back(key);
@@ -120,6 +168,8 @@ bool lexer::lexical_analysis(string file_name)
                 type = "Unknown";
 
             token key(type, tuple<int,int>(line_count, pos_in_line), str_buff);
+            if(pos_in_line != 1)
+                error_table.push_back(key);
             mark_table.push_back(key);
             cur = pre;
             pos_in_line += str_buff.length();
@@ -148,6 +198,7 @@ bool lexer::lexical_analysis(string file_name)
             str_buff.push_back('\'');
             string type = "Char";
             token key(type, tuple<int,int>(line_count, pos_in_line), str_buff);
+            string_num++;
             mark_table.push_back(key);
             buffer_manage(ptr_inc(pre));
             cur = pre;
@@ -176,6 +227,7 @@ bool lexer::lexical_analysis(string file_name)
             }
             str_buff.push_back('"');
             token key("StringLiteral", tuple<int,int>(line_count, pos_in_line), str_buff);
+            string_num++;
             mark_table.push_back(key);
             buffer_manage(ptr_inc(pre));
             cur = pre;
@@ -235,6 +287,7 @@ bool lexer::lexical_analysis(string file_name)
                     str_buff.push_back(buffer[pre]);
 
             token key("Punctuator", tuple<int,int>(line_count, pos_in_line), str_buff);
+            punctuator_num++;
             mark_table.push_back(key);
             cur = pre;
             pos_in_line += str_buff.length();
@@ -250,6 +303,7 @@ bool lexer::lexical_analysis(string file_name)
             }
             token key("Unknown", tuple<int,int>(line_count, pos_in_line), str_buff);
             mark_table.push_back(key);
+            error_table.push_back(key);
             cur = pre;
             pos_in_line += str_buff.length();
         }
