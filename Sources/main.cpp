@@ -9,13 +9,13 @@ void write_to_file(tuple<string, tuple<int, int>, string> token_params, ofstream
 
 int main(int argc, char** argv) {
     lexer clex;
-    // if(argc < 2)
-    // {
-    //     print_usage();
-    //     return -1;
-    // }
+    if(argc < 2)
+    {
+        print_usage();
+        return -1;
+    }
     
-    if(!clex.lexical_analysis("test1.txt"/*argv[1]*/))
+    if(!clex.lexical_analysis(argv[1]))
     {
         cout << "Open file fail!" << endl;
         return -1;
