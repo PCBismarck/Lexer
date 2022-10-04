@@ -72,12 +72,8 @@ bool lexer::lexical_analysis(string file_name)
     while (buffer[cur] != EOF)
     {
         //对新开始的第一个字符的检测
-        //设置的'\0'分隔符----------------------------------------------------------------------
-        if(buffer[cur] == '\0')
-            buffer_manage(ptr_inc(cur));
-
         //空白字符-------------------------------------------------------------------------------
-        else if(isblank(buffer[cur]))
+        if(isblank(buffer[cur]))
         {
             buffer_manage(ptr_inc(cur));
             pos_in_line++;
@@ -95,10 +91,8 @@ bool lexer::lexical_analysis(string file_name)
         else if(isdigit(buffer[cur]))
         {    
             int dot_flag = 0, e_flag = 0, err = 0;
-            //pre = cur;
             for(; !isDelimiter(buffer[pre]); buffer_manage(ptr_inc(pre)))
             {
-                char_count++;
                 if(buffer[pre] == '.')
                 {
                     if(dot_flag == 1 || e_flag == 1)
@@ -135,10 +129,7 @@ bool lexer::lexical_analysis(string file_name)
         else if(isIdentifier(buffer[cur]))
         {
             for(; isIdentifier(buffer[pre]); buffer_manage(ptr_inc(pre)))
-            {
                 str_buff.push_back(buffer[pre]);
-                char_count++;
-            }
             string type = "Identifier";
             if(isKeyword(str_buff))
             {
@@ -159,10 +150,7 @@ bool lexer::lexical_analysis(string file_name)
         {
             buffer_manage(ptr_inc(pre));
             for(; buffer[pre] != '\n' && buffer[pre] != '#'; buffer_manage(ptr_inc(pre)))
-            {
                 str_buff.push_back(buffer[pre]);
-                char_count++;
-            }
             string type = "PreprocessPart";
             if (pos_in_line != 1)
                 type = "Unknown";
@@ -178,12 +166,11 @@ bool lexer::lexical_analysis(string file_name)
         //字符常量-------------------------------------------------------------------------------
         else if(buffer[cur] == '\'')
         {
-            ptr_inc(pre);
+            buffer_manage(ptr_inc(pre));
             str_buff.push_back(buffer[cur]);
             for(; buffer[pre] != '\'' && buffer[pre] != EOF; buffer_manage(ptr_inc(pre)))
             {
                 str_buff.push_back(buffer[pre]);
-                char_count++;
                 if(buffer[pre] == '\n')
                 {
                     line_count++;
@@ -191,7 +178,12 @@ bool lexer::lexical_analysis(string file_name)
                 }
                 else if(buffer[pre] == '\\')
                 {
-                    buffer_manage(ptr_inc(pre));                    
+                    buffer_manage(ptr_inc(pre));
+                    if(buffer[pre] == '\n')
+                    {
+                        line_count++;
+                        pos_in_line =1;
+                    }                    
                     str_buff.push_back(buffer[pre]);
                 }
             }
@@ -208,12 +200,11 @@ bool lexer::lexical_analysis(string file_name)
         //字符串常量-------------------------------------------------------------------------------
         else if(buffer[cur] == '"')
         {
-            ptr_inc(pre);
+            buffer_manage(ptr_inc(pre));
             str_buff.push_back(buffer[cur]);
             for(; buffer[pre] != '"' && buffer[pre] != EOF; buffer_manage(ptr_inc(pre)))
             {
                 str_buff.push_back(buffer[pre]);
-                char_count++;
                 if(buffer[pre] == '\n')
                 {
                     line_count++;
@@ -221,7 +212,12 @@ bool lexer::lexical_analysis(string file_name)
                 }
                 else if(buffer[pre] == '\\')
                 {
-                    buffer_manage(ptr_inc(pre));                    
+                    buffer_manage(ptr_inc(pre));    
+                    if(buffer[pre] == '\n')
+                    {
+                        line_count++;
+                        pos_in_line = 1;
+                    }                   
                     str_buff.push_back(buffer[pre]);
                 }                
             }
@@ -241,8 +237,7 @@ bool lexer::lexical_analysis(string file_name)
             buffer_manage(ptr_inc(pre));
             if(buffer[pre] == '/')// 进入//处理流程
             {
-                for(; buffer[pre] != '\n' && buffer[pre] != EOF; buffer_manage(ptr_inc(pre)))
-                    char_count++;
+                for(; buffer[pre] != '\n' && buffer[pre] != EOF; buffer_manage(ptr_inc(pre)));
                 cur = pre;
             }
             else if(buffer[pre] == '*')// 进入/*处理流程
@@ -250,16 +245,21 @@ bool lexer::lexical_analysis(string file_name)
                 state = 1;//处于/*状态
                 for(; buffer[pre] != EOF; buffer_manage(ptr_inc(pre)))
                 {
-                    char_count++;
                     if(buffer[pre] == '*')
                         state = 2;//处于 /*---*状态
                     else if(buffer[pre] == '/' && state == 2)// /**/
                         break;
+                    else if(buffer[pre] == '\n')
+                    {
+                        pos_in_line = 1;   
+                        line_count++;
+                    }
                     else
                         state = 1;
                 }
                 if(buffer[pre] != EOF)
                     buffer_manage(ptr_inc(pre));
+                
                 cur = pre;
             }
             else //其他情况作为除号进行处理
@@ -268,7 +268,7 @@ bool lexer::lexical_analysis(string file_name)
                 if(buffer[pre] == '=')
                 {
                     str_buff.push_back(buffer[pre]);
-                    buffer_manage(ptr_inc(pre)); 
+                    buffer_manage(ptr_inc(pre));
                 }
                 token key("Punctuator", tuple<int,int>(line_count, pos_in_line), str_buff);
                 mark_table.push_back(key);
@@ -280,11 +280,10 @@ bool lexer::lexical_analysis(string file_name)
         //操作符(贪心算法，最长串匹配)-------------------------------------------------------------------------------
         else if(isPunctuator(buffer[cur]))
         {
-            //未完成
-            ptr_inc(pre);
+            buffer_manage(ptr_inc(pre));
             str_buff.push_back(buffer[cur]);
             for(; isOperator(str_buff+buffer[pre]); buffer_manage(ptr_inc(pre)))
-                    str_buff.push_back(buffer[pre]);
+                str_buff.push_back(buffer[pre]);
 
             token key("Punctuator", tuple<int,int>(line_count, pos_in_line), str_buff);
             punctuator_num++;
@@ -297,10 +296,8 @@ bool lexer::lexical_analysis(string file_name)
         else
         {
             for(; !isDelimiter(buffer[pre]); buffer_manage(ptr_inc(pre)))
-            {
                 str_buff.push_back(buffer[pre]);
-                char_count++;
-            }
+            
             token key("Unknown", tuple<int,int>(line_count, pos_in_line), str_buff);
             mark_table.push_back(key);
             error_table.push_back(key);
@@ -331,6 +328,7 @@ int lexer::get_chars_num()
 //指针自增，到左半区结尾返回-1，右半区结尾返回1，否则返回0
 int lexer::ptr_inc(int &ptr)
 {
+    char_count++;
     if(ptr == BUFFER_SIZE / 2 - 1)//前半区结尾
     {
         ptr++;
@@ -362,7 +360,7 @@ int lexer::read_to_buff(int where)
         {
             int offset = 0;
             if(where == RIGH_BUFF)
-                offset == HALF_BUFFER_SIZE;
+                offset = HALF_BUFFER_SIZE;
             buffer[(offset+ifs.gcount())%BUFFER_SIZE] = EOF;
         }
         return ifs.gcount();
@@ -378,5 +376,3 @@ void lexer::buffer_manage(int buffer_state)
     else if(buffer_state == 1)//读到右半区结尾，填充左半区
         read_to_buff(LEFT_BUFF);
 }
-
-
